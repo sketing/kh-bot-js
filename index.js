@@ -1,42 +1,29 @@
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-const rest = new REST({ version: '9' }).setToken(token);
-const commands = [{
-
-  name: 'ping',
-  description: 'Replies with Pong!'
-}]; 
-const token = process.env.DISCORD_BOT_TOKEN
-
-(async () => {
-  try {
-    console.log('Started refreshing application (/) commands.');
-
-    await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands },
-    );
-
-    console.log('Successfully reloaded application (/) commands.');
-  } catch (error) {
-    console.error(error);
-  }
-})();
+// Require the necessary discord.js classes
+const fs = require('fs');
+const { Client, Collection, Intents } = require('discord.js');
+const { token } = require('./config.json');
 
 
-const { Client, Intents } = require('discord.js');
+
+// Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
-
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+client.commands = new Collection();
+// When the client is ready, run this code (only once)
+client.once('ready', () => {
+	console.log('Ready!');
 });
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
+	if (!interaction.isCommand()) return;
 
-  if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!');
-  }
+	const { commandName } = interaction;
+
+	if (commandName === 'ping') {
+		await interaction.reply('Pong!');
+	} else if (commandName === 'beep') {
+		await interaction.reply('Boop!');
+	}
 });
 
-client.login('token');
+// Login to Discord with your client's token
+client.login(token);
